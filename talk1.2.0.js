@@ -23,7 +23,7 @@ $(function () {
         let you = ` <div class="chat-group-right d-flex justify-content-end">
                     <div>
                         <div class="chat-panel-img-right">
-                            <img src="./images/user-icon.png">
+                            <img src="https://talk.raphacure.co.in/images/user-icon.png">
                         </div>
                         <div class="chat-panel-info-right">
                             <p>|*Text*|</p>
@@ -38,7 +38,7 @@ $(function () {
         let other = ` <div class="chat-group-left d-flex justify-content-start">
                     <div class="">
                         <div class="chat-panel-img-left">
-                            <img src="./images/user-icon.png">
+                            <img src="https://talk.raphacure.co.in/images/user-icon.png">
                         </div>
                         <div class="chat-panel-info-left">
                             <p>|*Text*|</p>
@@ -329,7 +329,7 @@ $(function () {
                                                  class="group-user chat-contact-list ${item['active']}">
                                                 <div class="image-chat-wrapper">
                                                     <div class="chat-img">
-                                                        <img src="./images/user-icon.png">
+                                                        <img src="https://talk.raphacure.co.in/images/user-icon.png">
                                                     </div>
                                                     <span ng-class="group.IsOnline === false ? 'status-round Away-color-bg' : 'status-round Available-color-bg'"></span>
                                                 </div>
