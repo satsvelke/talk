@@ -10,7 +10,7 @@ var domain = 'https://talk.raphacure.co.in/'
 var api = domain.concat('api/');
 
 $(function () {
-    $talk("https://raw.githubusercontent.com/satsvelke/talk/main/chat.html", function () {
+    $talk("https://cdn.jsdelivr.net/gh/satsvelke/talk@main/chat.html", function () {
 
         var groups = [];
         var selectedGroup = {};
