@@ -225,7 +225,7 @@ $(function () {
 
             $talk(".chat-badge-count").html('');
             $talk(".chat-badge-count").hide();
-
+             return false;
         });
 
         var selectGroup = function (group, e) {
