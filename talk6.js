@@ -6,7 +6,7 @@ window.$talk = $;
 $.noConflict();
 
 
-var domain = 'http://localhost:47089/'
+var domain = 'https://talk.raphacure.co.in/'
 var api = domain.concat('api/');
 
 $(function () {
