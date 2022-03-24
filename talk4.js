@@ -1,4 +1,4 @@
-﻿import * as $talkJquery from 'https://code.jquery.com/jquery-3.6.0.min.js';
+import * as $talkJquery from 'https://code.jquery.com/jquery-3.6.0.min.js';
 import * as talkSignalR from 'https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js';
 import * as talkSelect2 from 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js';
 
@@ -6,11 +6,11 @@ window.$talk = $;
 $.noConflict();
 
 
-var domain = 'https://talk.raphacure.co.in/'
+var domain = 'http://localhost:47089/'
 var api = domain.concat('api/');
 
 $(function () {
-    $talk("talk").load("https://raw.githubusercontent.com/satsvelke/talk/main/chat.html", function () {
+    $talk("https://raw.githubusercontent.com/satsvelke/talk/main/chat.html", function () {
 
         var groups = [];
         var selectedGroup = {};
@@ -50,7 +50,7 @@ $(function () {
                     </div>
                 </div>`;
 
-         const connection = new signalR.HubConnectionBuilder()
+        const connection = new signalR.HubConnectionBuilder()
             .withUrl(domain.concat("TalkConversationHub?access_token=" + localStorage.getItem('talkToken') + ""))
             .configureLogging(signalR.LogLevel.Information)
             .build();
@@ -101,15 +101,13 @@ $(function () {
                 };
 
                 post(request).then(function (response) {
-                    let group = response.data.Transaction;
-
-                    groups.forEach(function (group, index) {
-                        group.active = '';
-                    });
-                    group.active = 'active';
+                    let group = response.Transaction;
                     groups.splice(0, 0, group);
                     selectedGroup = group;
 
+                    let newGroup = [];
+                    newGroup.push(group);
+                    addToGroups(newGroup);
                     getGroupMessageByUser(scope.selectedGroup.GroupId);
 
                 });
@@ -185,7 +183,7 @@ $(function () {
         });
 
         connection.on("OnConnected", (user) => {
-            
+
             let index = groups.findIndex((x => x.To == user.id));
             if (index != -1) {
                 groups[index].IsOnline = true;
@@ -223,7 +221,7 @@ $(function () {
 
             $talk(".chat-badge-count").html('');
             $talk(".chat-badge-count").hide();
-             return false;
+            return false;
         });
 
         var selectGroup = function (group, e) {
@@ -266,7 +264,7 @@ $(function () {
 
         var showNotificationCount = function (message) {
             let index = groups.findIndex((x => x.ToUniqueId == message.FromUniqueId));
-            let count = groups[index].Count = parseInt(groups[index].Count === undefined || groups[index].Count === ''  ? 0 : groups[index].Count) + 1
+            let count = groups[index].Count = parseInt(groups[index].Count === undefined || groups[index].Count === '' ? 0 : groups[index].Count) + 1
             $talk("#".concat(message.GroupId).concat('-count')).html(count);
             $talk("#".concat(message.GroupId).concat('-count')).show();
         };
@@ -321,7 +319,7 @@ $(function () {
         };
 
 
-        var getGroupTemplate = function (groups) {
+        var addToGroups = function (groups) {
             const groupTemplate = groups.map(item => {
 
                 item.Date === undefined ? item.Date = '' : item.Date;
@@ -356,6 +354,7 @@ $(function () {
             $talk("#conversations").append(groupTemplate);
 
         }
+
 
 
         $talk("talk").on("keyup", "#text", function ($event) {
@@ -414,7 +413,7 @@ $(function () {
                     let group = groups[0];
                     group.active = 'active'
                     selectGroup(group, 'load');
-                    getGroupTemplate(groups);
+                    addToGroups(groups);
                 }
 
             }, function () { });
