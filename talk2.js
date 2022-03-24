@@ -90,32 +90,30 @@ $(function () {
         });
 
         $talk('#search').on('select2:select', function (e) {
-            let scope = $angular.element($("#talkContent")).scope();
-            scope.$apply(function () {
 
-                let isExist = scope.groups.find(c => c.To == e.params.data.id);
+            let isExist = scope.groups.find(c => c.To == e.params.data.id);
 
-                if (typeof isExist === 'undefined') {
-                    var request = {
-                        method: 'POST',
-                        url: api.concat('group/addgroup'),
-                        data: { "To": e.params.data.id }
-                    };
-                    scope.post(request).then(function (response) {
-                        let group = response.data.Transaction;
+            if (typeof isExist === 'undefined') {
+                var request = {
+                    method: 'POST',
+                    url: api.concat('group/addgroup'),
+                    data: { "To": e.params.data.id }
+                };
 
-                        $angular.forEach(scope.groups, function (group, index) {
-                            group.active = '';
-                        });
-                        group.active = 'active';
-                        scope.groups.splice(0, 0, group);
-                        scope.selectedGroup = group;
+                post(request).then(function (response) {
+                    let group = response.data.Transaction;
 
-                        scope.getGroupMessageByUser(scope.selectedGroup.GroupId);
-
+                    groups.forEach(function (group, index) {
+                        group.active = '';
                     });
-                }
-            })
+                    group.active = 'active';
+                    groups.splice(0, 0, group);
+                    selectedGroup = group;
+
+                    getGroupMessageByUser(scope.selectedGroup.GroupId);
+
+                });
+            }
         });
 
         //=================================================
