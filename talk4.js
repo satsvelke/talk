@@ -91,7 +91,7 @@ $(function () {
 
         $talk('#search').on('select2:select', function (e) {
 
-            let isExist = scope.groups.find(c => c.To == e.params.data.id);
+            let isExist = groups.find(c => c.To == e.params.data.id);
 
             if (typeof isExist === 'undefined') {
                 var request = {
