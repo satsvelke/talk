@@ -1,0 +1,109 @@
+<!--<!doctype html>
+<html lang="en">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body id="body">-->
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<section id="talkContent"  class="chat-main slide-chat-panel">
+    <div>
+        <a href="#" id="openchat" class="chat-btn">
+            <i class="fa-solid fa-comment"></i>
+            <span class="chat-badge-count"></span>
+        </a>
+    </div>
+    <div class="custom-panel">
+        <div class="custom-left-panel mobile-device-show ">
+            <div class="custom-list-header">
+                <div class="profile-box">
+                    <div class="profile-chat-wrapper">
+                        <div class="profile-img">
+                            <img src="./images/user-icon.png">
+                        </div>
+                        <span class="status-round Available-color-bg"></span>
+                    </div>
+                    <div>
+                        <h3 id="logged-in-user-name" class="profile-title"></h3>
+                    </div>
+                </div>
+                <div class="title-wrapper d-flex justify-content-between align-items-center">
+                    <h5 class="custom-list-header-title">Chats (2)</h5>
+                    <div class="tab-buttons text-center">
+                        <a class="tab-btn active">People</a>
+                        <a class="tab-btn">Groups</a>
+                    </div>
+                </div>
+
+                <div class="form-search">
+                    <!--<input type="text" class="search-control" id="exampleInput" aria-describedby="exampleInput">-->
+                    <select id="search" class="js-data-example-ajax search-control"></select>
+                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                </div>
+            </div>
+            <div class="custom-list-body">
+                <div id="conversations" class="scroll-box">
+                </div>
+            </div>
+        </div>
+        <div class="custom-right-panel mobile-device-hide ">
+            <div class="custom-panel-header d-flex justify-content-between align-items-center">
+
+                <div class="w-100 d-flex align-items-center">
+                    <div>
+                        <a class="chat-back-arrow"><i class="fa-solid fa-chevron-left"></i></a>
+                    </div>
+                    <div>
+
+                        <div class="image-chat-wrapper">
+                            <div class="chat-img">
+                                <img src="./images/user-icon.png">
+                            </div>
+                            <span class="status-round Available-color-bg"></span>
+                        </div>
+                        <div class="chat-info">
+                            <h5 id="selected-title" class="right-side-chat-title"></h5>
+                            <!--<p class="chat-text last-seen-color">Last Seen 02:30 PM</p>-->
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="chat-action-icons d-flex justify-content-end w-100">
+                    <a><i class="fa-solid fa-user-plus"></i></a>
+                    <a><i class="fa-solid fa-file-lines"></i></a>
+                </div>
+            </div>
+            <div class="custom-panel-body">
+            </div>
+            <div class="custom-panel-footer">
+                <div class="chat-control d-flex align-items-center">
+                    <span class="icon"><i class="fa-solid fa-paperclip"></i></span>
+                    <input type="text"   class="type-control" id="text" aria-describedby="exampleInput"
+                           placeholder="Type a message here...">
+                    <span class="icon"><i class="fa-solid fa-face-smile"></i></span>
+                    <span id="sendMessage" class="icon send-btn"><i class="fa-solid fa-paper-plane"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container-fluid">
+            <p class="footer-text">
+                &copy; 2022 - talk - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </p>
+        </div>
+    </footer>
+</section>
+
+<script>
+    
+</script>
+
+
+<!--</body>
+
+</html>-->
