@@ -5,25 +5,23 @@ import * as talkSelect2 from 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/di
 window.$talk = $;
 $.noConflict();
 
-
-var domain = 'https://talk.raphacure.co.in/'
+var domain = 'https://talk.cognotahealthcare.co.in/'
 var api = domain.concat('api/');
 
 $(function () {
-   $talk("talk").load("https://satsvelke.github.io/talk/index.html", function () {
+
+    $talk("talk").load(domain.concat("html/chat.html"), function () {
 
         var groups = [];
         var selectedGroup = {};
-        var message = {};
         var mainCount = 0;
 
-        $talk(".chat-badge-count").hide();
-
-        //<span class="time">|*Date*|</span>
-        let you = ` <div class="chat-group-right d-flex justify-content-end">
+        var elements = {
+            chatBadge: $talk(".chat-badge-count"),
+            you: ` <div class="chat-group-right d-flex justify-content-end">
                     <div>
                         <div class="chat-panel-img-right">
-                            <img src="https://talk.raphacure.co.in/images/user-icon.png">
+                            <img src="./images/user-icon.png">
                         </div>
                         <div class="chat-panel-info-right">
                             <p>|*Text*|</p>
@@ -33,12 +31,11 @@ $(function () {
                             </div>
                         </div>
                     </div>
-                </div>`;
-
-        let other = ` <div class="chat-group-left d-flex justify-content-start">
+                </div>`,
+            other: ` <div class="chat-group-left d-flex justify-content-start">
                     <div class="">
                         <div class="chat-panel-img-left">
-                            <img src="https://talk.raphacure.co.in/images/user-icon.png">
+                            <img src="./images/user-icon.png">
                         </div>
                         <div class="chat-panel-info-left">
                             <p>|*Text*|</p>
@@ -48,7 +45,21 @@ $(function () {
                             </div>
                         </div>
                     </div>
-                </div>`;
+                </div>`,
+            searchUser: $talk("#search"),
+            loggedInUserName: $talk("#logged-in-user-name"),
+            talk: $talk("talk"),
+            body: $talk("body"),
+            selectedTtile: $talk('#selected-title'),
+            conversationWindow: $talk(".custom-panel-body"),
+            conversations: $talk("#conversations"),
+            groupUser: $talk(".group-user"),
+            text: $talk("#text")
+        }
+
+
+        elements.chatBadge.hide();
+
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(domain.concat("TalkConversationHub?access_token=" + localStorage.getItem('talkToken') + ""))
@@ -56,7 +67,7 @@ $(function () {
             .build();
 
 
-        $talk("#search").select2({
+        elements.searchUser.select2({
             tags: false,
             multiple: false,
             tokenSeparators: [',', ' '],
@@ -89,7 +100,7 @@ $(function () {
             }
         });
 
-        $talk('#search').on('select2:select', function (e) {
+        elements.searchUser.on('select2:select', function (e) {
 
             let isExist = groups.find(c => c.To == e.params.data.id);
 
@@ -109,7 +120,6 @@ $(function () {
                     newGroup.push(group);
                     addToGroups(newGroup);
                     getGroupMessageByUser(scope.selectedGroup.GroupId);
-
                 });
             }
         });
@@ -120,7 +130,8 @@ $(function () {
 
         async function start() {
             try {
-                await connection.start();
+                if ('talkToken' in localStorage)
+                    await connection.start();
             } catch (err) {
                 console.error(err);
                 setTimeout(start, 5000);
@@ -141,7 +152,7 @@ $(function () {
             showNotification(message);
 
             if (selectedGroup.ToUniqueId === message.FromUniqueId)
-                addChat(other, message);
+                addChat(elements.other, message);
             else {
 
                 var isexist = groups.find(c => c.GroupId === message.GroupId);
@@ -167,10 +178,7 @@ $(function () {
                 else {
                     showNotificationCount(message);
                 }
-
             }
-
-
         });
 
         connection.on('OnGroupCreation', (message) => {
@@ -183,7 +191,6 @@ $(function () {
         });
 
         connection.on("OnConnected", (user) => {
-
             let index = groups.findIndex((x => x.To == user.id));
             if (index != -1) {
                 groups[index].IsOnline = true;
@@ -191,7 +198,7 @@ $(function () {
         });
 
         connection.on("OnCallerConnected", (user) => {
-            $talk("#logged-in-user-name").html(user.FirstName.concat(' ').concat(user.LastName));
+            elements.loggedInUserName.html(user.FirstName.concat(' ').concat(user.LastName));
         });
 
         connection.on("OnDisConnected", (id) => {
@@ -209,18 +216,15 @@ $(function () {
         //=================================================
 
 
-
         //=================================================
         //  methods 
         //==================================================
 
 
-        $talk("talk").on("click", "#openchat", function (e) {
-            var element = document.getElementById("body");
-            element.classList.toggle("show");
-
-            $talk(".chat-badge-count").html('');
-            $talk(".chat-badge-count").hide();
+        elements.talk.on("click", "#openchat", function (e) {
+            elements.body.toggleClass("show");
+            elements.chatBadge.html('');
+            elements.chatBadge.hide();
             return false;
         });
 
@@ -236,7 +240,7 @@ $(function () {
             group.Count = 0;
             selectedGroup = group;
 
-            $talk('#selected-title').html(group.GroupName)
+            elements.selectedTtile.html(group.GroupName)
         };
 
 
@@ -253,9 +257,11 @@ $(function () {
         };
 
         let addChat = function (template, message) {
+
             template = template.replace('|*Text*|', message.Text).replace('|*Name*|', message.Name).replace('|*Date*|', message.Date);
-            $talk(".custom-panel-body").append(template);
-            $talk(".custom-panel-body").stop().animate({ scrollTop: $talk(".custom-panel-body")[0].scrollHeight }, 1000);
+            elements.conversationWindow.append(template);
+            elements.conversationWindow.stop().animate({ scrollTop: elements.conversationWindow[0].scrollHeight }, 1000);
+            elements.conversationWindow.stop().animate({ scrollTop: elements.conversationWindow[0].scrollHeight }, 1000);
         }
 
         var createGroup = function () {
@@ -295,10 +301,10 @@ $(function () {
         //=================================================
         //  events 
         //==================================================
-        $talk("talk").on("click", ".group-user", function (e) {
+        elements.talk.on("click", ".group-user", function (e) {
 
             let groupId = $talk(this).attr("id");
-            $talk(".group-user").removeClass('active');
+            elements.groupUser.removeClass('active');
             $talk(this).addClass('active');
             var group = groups.find(x => x.GroupId === groupId);
 
@@ -309,13 +315,14 @@ $(function () {
         });
 
         var showNotification = function (message) {
-            if ($talk('body').hasClass('show')) {
+            debugger
+            if (elements.body.hasClass('show')) {
                 return false;
             }
 
             mainCount = mainCount + 1;
-            $talk(".chat-badge-count").html(mainCount);
-            $talk(".chat-badge-count").show();
+            elements.chatBadge.html(mainCount);
+            elements.chatBadge.show();
         };
 
 
@@ -329,7 +336,7 @@ $(function () {
                                                  class="group-user chat-contact-list ${item['active']}">
                                                 <div class="image-chat-wrapper">
                                                     <div class="chat-img">
-                                                        <img src="https://talk.raphacure.co.in/images/user-icon.png">
+                                                        <img src="./images/user-icon.png">
                                                     </div>
                                                     <span ng-class="group.IsOnline === false ? 'status-round Away-color-bg' : 'status-round Available-color-bg'"></span>
                                                 </div>
@@ -351,14 +358,11 @@ $(function () {
                                             </div>` ;
             });
 
-            $talk("#conversations").append(groupTemplate);
-
+            elements.conversations.append(groupTemplate);
         }
 
-
-
-        $talk("talk").on("keyup", "#text", function ($event) {
-            if (!$talk("#text").val())
+        elements.talk.on("keyup", "#text", function ($event) {
+            if (!elements.text.val())
                 return;
 
             if ($event.keyCode === 13) {
@@ -366,13 +370,13 @@ $(function () {
             }
         });
 
-        $talk("talk").on("click", "#sendMessage", function (e) {
+        elements.talk.on("click", "#sendMessage", function (e) {
             sendMessage();
         });
 
         var sendMessage = function (event) {
 
-            if ($talk("#text").val() === undefined) {
+            if (elements.text.val() === undefined) {
                 alert('type something');
                 return;
             }
@@ -384,7 +388,7 @@ $(function () {
                     To: selectedGroup.To,
                     ToUniqueId: selectedGroup.ToUniqueId,
                     Name: selectedGroup.GroupName,
-                    Text: $talk("#text").val(),
+                    Text: elements.text.val(),
                     Users: users,
                     GroupId: selectedGroup.GroupId,
                     TimeStamp: parseInt(Date.now())
@@ -392,9 +396,9 @@ $(function () {
 
                 connection.invoke('Send', message);
 
-                addChat(you, message);
+                addChat(elements.you, message);
 
-                $talk("#text").val('')
+                elements.text.val('')
             }
         };
 
@@ -429,17 +433,17 @@ $(function () {
 
             post(request).then(function (response) {
 
-                $(".custom-panel-body").html('');
+                elements.conversationWindow.html('');
 
                 response.Transaction.forEach(function (message, index) {
                     message.Date = formatAMPM(new Date(message.TimeStamp));
 
                     if (message.IsLeft) {
-                        addChat(other, message);
+                        addChat(elements.other, message);
                     }
                     else {
                         message.Name = 'You';
-                        addChat(you, message);
+                        addChat(elements.you, message);
                     }
                 });
 
@@ -450,10 +454,7 @@ $(function () {
         //  methods 
         //==================================================
 
-
-
         getGroups();
-
 
     });
 });
