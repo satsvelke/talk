@@ -9,7 +9,6 @@ var domain = 'https://talk.cognotahealthcare.co.in/'
 var api = domain.concat('api/');
 
 $(function () {
-
     $talk("talk").load("https://satsvelke.github.io/talk/index.html", function () {
 
         var groups = [];
@@ -46,6 +45,23 @@ $(function () {
                         </div>
                     </div>
                 </div>`,
+
+            fileYouTemplate: `<div  class=" chat-group-right upload-show-UI d-flex justify-content-end">
+                    <div id="|*documentid*|" class="document chat-panel-info-right upload-show-info d-flex align-items-center">
+                        <span class="file-icon-box"><i class="fa-solid fa-file-image"></i></span>
+                        <a class="upload-file-name">|*filename*|</a>
+                        <span class="download-icon-box"><i class="fa-solid fa-circle-down"></i></span>
+                    </div>
+                </div>`,
+
+            fileOtherTemplate: `<div  class=" chat-group-left upload-show-UI d-flex justify-content-start">
+                    <div id="|*documentid*|" class=" document chat-panel-info-right upload-show-info d-flex align-items-center">
+                        <span class="file-icon-box"><i class="fa-solid fa-file-image"></i></span>
+                        <a class="upload-file-name">|*filename*|</a>
+                        <span class="download-icon-box"><i class="fa-solid fa-circle-down"></i></span>
+                    </div>
+                </div>`,
+
             searchUser: $talk("#search"),
             loggedInUserName: $talk("#logged-in-user-name"),
             talk: $talk("talk"),
@@ -54,7 +70,8 @@ $(function () {
             conversationWindow: $talk(".custom-panel-body"),
             conversations: $talk("#conversations"),
             groupUser: $talk(".group-user"),
-            text: $talk("#text")
+            text: $talk("#text"),
+            files: $talk('#file')
         }
 
 
@@ -134,7 +151,7 @@ $(function () {
                     await connection.start();
             } catch (err) {
                 console.error(err);
-                setTimeout(start, 5000);
+                setTimeout(start, 10000);
             }
         };
 
@@ -148,11 +165,16 @@ $(function () {
         //==================================================
         connection.on('OnMessageReceived', (message) => {
             message.Date = formatAMPM(new Date(message.TimeStamp));
-
             showNotification(message);
+            if (selectedGroup.ToUniqueId === message.FromUniqueId) {
 
-            if (selectedGroup.ToUniqueId === message.FromUniqueId)
-                addChat(elements.other, message);
+                if (message.IsDocument) {
+                    let documents = []
+                    documents.push({ Id: message.DocumentId, Filename: message.DocumentName });
+                    addFileChat(getOtherFileTemplate(documents));
+                }
+                else addChat(elements.other, message);
+            }
             else {
 
                 var isexist = groups.find(c => c.GroupId === message.GroupId);
@@ -191,10 +213,8 @@ $(function () {
         });
 
         connection.on("OnConnected", (user) => {
-            let index = groups.findIndex((x => x.To == user.id));
-            if (index != -1) {
-                groups[index].IsOnline = true;
-            }
+            $talk("#" + user.Id + "-status").removeClass('Away-color-bg');
+            $talk("#" + user.Id + "-status").addClass('Available-color-bg');
         });
 
         connection.on("OnCallerConnected", (user) => {
@@ -202,11 +222,8 @@ $(function () {
         });
 
         connection.on("OnDisConnected", (id) => {
-            let index = groups.findIndex((x => x.To == id));
-            if (index != -1) {
-                groups[index].IsOnline = false;
-
-            }
+            $talk("#" + id + "-status").removeClass('Available-color-bg')
+            $talk("#" + id + "-status").addClass('Away-color-bg')
         });
 
         start();
@@ -236,6 +253,10 @@ $(function () {
                 group.active = '';
             });
 
+            $talk(".group-user").removeClass('active');
+
+            $talk("#".concat(group.GroupId)).addClass('active');
+
             group.active = 'active';
             group.Count = 0;
             selectedGroup = group;
@@ -245,15 +266,18 @@ $(function () {
 
 
         var post = function (request) {
-            $.ajaxSetup({
+            $talk.ajaxSetup({
+                xhrFields: {
+                    responseType: request.responseType
+                },
                 headers: {
                     'Authorization': 'Bearer '.concat(localStorage.getItem('talkToken'))
                 },
-                contentType: 'application/json'
+                contentType: 'application/json',
             });
 
 
-            return $.post(request.url, JSON.stringify(request.data));
+            return $talk.post(request.url, JSON.stringify(request.data));
         };
 
         let addChat = function (template, message) {
@@ -261,8 +285,13 @@ $(function () {
             template = template.replace('|*Text*|', message.Text).replace('|*Name*|', message.Name).replace('|*Date*|', message.Date);
             elements.conversationWindow.append(template);
             elements.conversationWindow.stop().animate({ scrollTop: elements.conversationWindow[0].scrollHeight }, 1000);
+        }
+
+        let addFileChat = function (template, message) {
+            elements.conversationWindow.append(template);
             elements.conversationWindow.stop().animate({ scrollTop: elements.conversationWindow[0].scrollHeight }, 1000);
         }
+
 
         var createGroup = function () {
             //  connection.invoke('AddToGroup', '13456');
@@ -315,7 +344,7 @@ $(function () {
         });
 
         var showNotification = function (message) {
-            debugger
+
             if (elements.body.hasClass('show')) {
                 return false;
             }
@@ -324,7 +353,7 @@ $(function () {
             elements.chatBadge.html(mainCount);
             elements.chatBadge.show();
         };
-
+        
 
         var addToGroups = function (groups) {
             const groupTemplate = groups.map(item => {
@@ -332,19 +361,21 @@ $(function () {
                 item.Date === undefined ? item.Date = '' : item.Date;
                 item.Count === undefined || item.Count === 0 ? item.Count = '' : item.Count;
 
-                return `<div id='${item['GroupId']}'"
+                return `<div id='${item['GroupId']}'" 
                                                  class="group-user chat-contact-list ${item['active']}">
                                                 <div class="image-chat-wrapper">
                                                     <div class="chat-img">
                                                         <img src="./images/user-icon.png">
                                                     </div>
-                                                    <span ng-class="group.IsOnline === false ? 'status-round Away-color-bg' : 'status-round Available-color-bg'"></span>
+                                                    <span id='${item['To']}-status'"
+                                                    class="signal-status status-round  ${item.IsOnline === true ? 'Available-color-bg' : 'Away-color-bg'} ">
+                                                    </span>
                                                 </div>
                                                 <div class="chat-info">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <div>
                                                             <h5>${item['GroupName']}</h5>
-                                                            <p >
+                                                            <p>
                                                             </p>
                                                         </div>
                                                         <div class="chat-menu-icons">
@@ -439,16 +470,158 @@ $(function () {
                     message.Date = formatAMPM(new Date(message.TimeStamp));
 
                     if (message.IsLeft) {
-                        addChat(elements.other, message);
+                        if (message.IsDocument) {
+                            let documents = [];
+                            documents.push({ Id: message.DocumentId, Filename: message.DocumentName });
+                            addFileChat(getOtherFileTemplate(documents));
+                        }
+                        else {
+                            addChat(elements.other, message);
+                        }
                     }
                     else {
                         message.Name = 'You';
-                        addChat(elements.you, message);
+
+                        if (message.IsDocument) {
+                            let documents = [];
+                            documents.push({ Id: message.DocumentId, Filename: message.DocumentName });
+                            addFileChat(getYouFileTemplate(documents));
+                        }
+                        else {
+                            addChat(elements.you, message);
+                        }
+
                     }
                 });
 
             }, function () { });
         };
+
+
+
+        var getYouFileTemplate = function (documents) {
+            var template = documents.map(c => {
+                return elements.fileYouTemplate
+                    .replace("|*filename*|", c.Filename)
+                    .replace("|*documentid*|", c.Id);
+            });
+
+            return template;
+        }
+
+        var getOtherFileTemplate = function (documents) {
+            var template = documents.map(c => {
+                return elements.fileOtherTemplate
+                    .replace("|*filename*|", c.Filename)
+                    .replace("|*documentid*|", c.Id);
+            });
+
+            return template;
+        }
+
+        var sendUploadedMessage = function (documents) {
+
+            let users = [];
+            users.push(selectedGroup.To);
+
+            documents.forEach(function (document) {
+                let message = {
+                    To: selectedGroup.To,
+                    ToUniqueId: selectedGroup.ToUniqueId,
+                    Name: selectedGroup.GroupName,
+                    Text: elements.text.val(),
+                    Users: users,
+                    GroupId: selectedGroup.GroupId,
+                    TimeStamp: parseInt(Date.now()),
+                    IsDocument: true,
+                    DocumentId: document.Id,
+                    DocumentName: document.Filename
+                };
+
+                connection.invoke('Send', message);
+            });
+
+            addFileChat(getYouFileTemplate(documents));
+
+            elements.text.val('')
+        };
+
+        function removeFiles(e) {
+            elements.files.val('');
+        }
+
+        elements.talk.on("click", "#file", function ($event) {
+            removeFiles();
+        });
+
+        elements.talk.on("click", ".document", function ($event) {
+            var request = {
+                method: 'POST',
+                url: api.concat('document/getbyid'),
+                data: { Id: this.id },
+                responseType: 'blob'
+            };
+
+            post(request).then(function (response, status, xhr) {
+                var filename = "";
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    var matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                }
+
+
+                const url = window.URL.createObjectURL(new Blob([response]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+
+            });
+
+        });
+
+        elements.talk.on("change", "#file", function ($event) {
+
+            var formData = new FormData($('form')[0]);
+
+            if (this.files.length > 0) {
+                for (var i = 0; i < this.files.length; i++) {
+                    formData.append('files', this.files[i]);
+                }
+
+                $.ajax({
+                    url: api.concat('document/upload'),
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem('talkToken')
+                    },
+                    xhr: function () {
+                        var myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) {
+                            myXhr.upload.addEventListener('progress', function (e) {
+                                if (e.lengthComputable) {
+                                    $('progress').attr({
+                                        value: e.loaded,
+                                        max: e.total,
+                                    });
+                                }
+                            }, false);
+                        }
+                        return myXhr;
+                    }
+                }).done(function (response) {
+                    sendUploadedMessage(response.Transaction);
+                    removeFiles();
+                });
+            }
+        });
 
         //=================================================
         //  methods 
