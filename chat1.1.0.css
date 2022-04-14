@@ -177,6 +177,9 @@ body {
 .d-none {
     display: none !important;
 }
+.w-100 {
+    width: 100% !important;
+}
 
 .Available-color {
     color: #58d613;
@@ -265,6 +268,7 @@ p {
     font-weight: 600;
     margin-bottom: 0;
     margin-top: 5px;
+    color: #071659;
 }
 .chat-status-text {
     font-size: 11px;
@@ -279,22 +283,24 @@ p {
 .chat-profile-img {
     height: 36px;
     width: 36px;
-    background-color: #e5e5e5;
+    background-color: #010e5b;
+    color: #ffffff;
     border-radius: 50%;
     overflow: hidden;
+    text-align: center;
+    line-height: 36px;
+    font-size: 16px;
 }
 .profile-img img {
     width: 100%;
 }
 
 
-
-
 .chat-panel-body {
     padding-top: 70px;
     padding-bottom: 50px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -302,14 +308,18 @@ p {
 }
 .custom-left-panel {
     width: 400px;
-    background-color: #f6f9ff;
+    border-radius: 10px;
+    background-color: #ffffff;
+    -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 12%);
+    box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 12%);
+    border: 1px solid #e3e3e3;
     transition: all 0.3s ease-in-out;
     height: 100%;
     z-index: 1;
+    overflow:hidden;
 }
 .custom-list-header {
     padding: 16px 12px;
-    background-color: #f6f9ff;
 }
 .left-panel-header-title {
     font-size: 16px;
@@ -334,7 +344,8 @@ p {
     border-radius: 0 35px 35px 0;
 }
 .left-panel-tab-buttons .tab-btn:hover {
-    background-color: #c70147;
+    border-color: #08175a;
+    background-color: #08175a;
     color: #ffffff;
     transition: all 0.3s ease-in-out;
 }
@@ -387,14 +398,11 @@ body .select2-container {
     z-index: 999999;
 }
 
-.custom-list-body {
-    
-}
 .scroll-box {
     padding: 12px;
     padding-top: 0;
     overflow: auto;
-    height: calc(100vh - 256px);
+    height: calc(100vh - 228px);
 }
 .chat-contact-list {
     clear: both;
@@ -402,7 +410,7 @@ body .select2-container {
     border-radius: 10px;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     margin-bottom: 10px;
 }
 .chat-contact-list.active {
@@ -413,8 +421,8 @@ body .select2-container {
     transition: all 0.3s ease-in-out;
 }
 .chat-contact-list:hover {
-    background-color: #ffffff;
-    border-color: #cdd1e7;
+    background-color: #eff2ff;
+    border-color: #d6dcf4;
     transition: all 0.3s ease-in-out;
 }
 
@@ -450,62 +458,83 @@ body .select2-container {
     -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 12%);
     box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 12%);
     border: 1px solid #e3e3e3;
+    overflow:hidden;
 }
 
 .custom-panel-header {
-    padding: 10px;
-    border-bottom: 1px solid #dedede;
+    padding: 16px;
+    border-bottom: 1px solid #dde0ec;
 }
 .custom-panel-body {
     padding: 16px;
     overflow: auto;
-    height: calc(100vh - 250px);
+    height: calc(100vh - 263px);
 }
-.custom-panel-footer{
+.custom-panel-footer {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 12px 18px;
+    padding: 16px;
     background-color: #ffffff;
-    border-radius: 10px;
+    border-top: 1px solid #dde0ec;
+    border-radius: 0 0 10px 10px;
     -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
     box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
 }
-.chat-upload-icon {
+.chat-control .chat-upload-icon {
     margin-bottom: 0;
 }
 
-.chat-control .icon {
-    font-size: 14px;
-    color: #858585;
-    padding: 0 10px;
+.chat-control .icon-box {
+    height: 30px;
+    width: 30px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+    display: block;
+    margin: 0 10px;
     cursor: pointer;
+}
+.chat-control .icon-box:hover {
+    background-color: #dee8fd;
+    -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
+    box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
+    transition: all 0.3s ease-in-out;
+}
+.chat-control .icon-box img {
+    width: 17px;
 }
 .type-control{
     padding: 8px 10px;
     border: 0;
-    width: 100%;
     background-color: #ffffff;
     transition: all 0.3s ease-in-out;
     font-size: 14px;
+    width: 100%;
 }
-.type-control:focus{
+.type-control::placeholder {
+    font-weight: 600;
+    color: #c0c0c0;
+}
+.type-control:focus {
     outline: none;
 }
 .chat-control  .send-btn{
-    height: 40px;
-    width:40px;
-    line-height: 40px;
+    height: 36px;
+    width:36px;
+    line-height: 36px;
     text-align: center;
     border-radius: 50%;
-    background-color: #16cdff;
+    background-color: #c70147;
     display: block;
     color: #ffffff;
     transition: all 0.3s ease-in-out;
+    margin-right:0;
 }
-.chat-control  .send-btn:hover{
-    background-color: #e7b912;
+.chat-control .send-btn:hover{
+    background-color: #07165b;
     transition: all 0.3s ease-in-out;
 }
 
@@ -519,24 +548,29 @@ body .select2-container {
     clear: both;
     content: "";
 }
-.chat-panel-img-left{
+.chat-panel-img-left {
     height: 36px;
     width: 36px;
-    background-color: #e5e5e5;
+    background-color: #ff6400;
+    color: #ffffff;
     border-radius: 50%;
     overflow: hidden;
+    text-align: center;
+    line-height: 36px;
+    font-size: 16px;
     float: left;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 .chat-panel-info-left{
     overflow: hidden;
 }
-.chat-panel-info-left p{
+.chat-panel-info-left p {
     padding: 10px;
-    background-color: #bff1ff;
+    background-color: #010e5b;
+    color: #ffffff;
     border-radius: 8px 8px 8px 0px;
-    font-size: 14px;
-    margin-bottom:0;
+    font-size: 13px;
+    margin-bottom: 0;
 }
 
 .chat-group-right{
@@ -551,21 +585,26 @@ body .select2-container {
 .chat-panel-img-right{
     height: 36px;
     width: 36px;
-    background-color: #e5e5e5;
+    background-color: #010e5b;
+    color: #ffffff;
     border-radius: 50%;
     overflow: hidden;
+    text-align: center;
+    line-height: 36px;
+    font-size: 16px;
     float: right;
-    margin-left: 10px;
+    margin-left: 8px;
 }
 .chat-panel-info-right{
     overflow: hidden;
 }
-.chat-panel-info-right p{
+.chat-panel-info-right p {
     padding: 10px;
-    background-color: #ffffff;
+    background-color: #dae6ff;
     border-radius: 8px 8px 0px 8px;
-    font-size: 14px;
-    margin-bottom:0;
+    font-size: 13px;
+    color: #07165b;
+    margin-bottom: 0;
 }
 .chat-user-info{
     margin-top: 5px;
@@ -596,9 +635,13 @@ body .select2-container {
 .chat-img {
     height: 36px;
     width: 36px;
-    background-color: #e5e5e5;
+    background-color: #010e5b;
+    color: #ffffff;
     border-radius: 50%;
     overflow: hidden;
+    text-align: center;
+    line-height: 36px;
+    font-size: 16px;
 }
 .chat-img img{
     width: 100%;
@@ -654,32 +697,52 @@ body .select2-container {
     width: 250px;
 }
 
-.chat-action-icons a{
-    font-size: 14px;
-    padding: 2px 4px;
-    margin: 0 4px;
-    color: #4c4a4a;
+.chat-action-icons {
+    padding-left:0;
+    margin-bottom:0;
+    list-style-type: none;
+}
+.chat-action-icons li a {
+    height: 36px;
+    width: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+    display: block;
+    margin: 0 8px;
     cursor: pointer;
 }
-
+.chat-action-icons li a:hover {
+    background-color: #dee8fd;
+    -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
+    box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
+    transition: all 0.3s ease-in-out;
+}
+.chat-action-icons li a img {
+    width: 22px;   
+}
 
 .select2-container {
     width: 100% !important;
 }
 
-.chat-btn {
+.custom-chat-btn {
     position: absolute;
     top: 50%;
-    left: -44px;
+    left: -59px;
     transform: translateY(-50%);
-    padding: 14px;
-    background-color: #ffffff;
-    color: #1e1e1e;
+    padding: 16px;
+    background-color: #071659;
+    color: #ffffff;
     border-radius: 10px 0px 0px 10px;
     z-index: 99999;
     -webkit-box-shadow: -2px 3px 8px 0px rgb(0 0 0 / 10%);
     box-shadow: -2px 3px 8px 0px rgb(0 0 0 / 10%);
-    border: 1px solid #e2e2e2;
+    border: 1px solid #071659;
+}
+.custom-chat-btn img{
+    width: 24px;
 }
 .chat-badge-count {
     position: absolute;
@@ -699,59 +762,79 @@ body .select2-container {
 
 
 .chat-panel-footer {
-    padding: 11px 0;
-    background-color: #f0fbfe;
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
+    padding: 9px 16px;
+    background-color: #ffffff;
+    -webkit-box-shadow: 1px 2px 14px 0px rgb(0 0 0 / 15%);
+    box-shadow: 1px 2px 14px 0px rgb(0 0 0 / 15%);
 }
 
 .chat-panel-footer .footer-text {
-    font-size: 14px;
+    font-size: 12px;
     margin-bottom: 0;
+    font-weight: 600;
+    color: #9298b5;
 }
 
 
 .upload-show-UI .upload-show-info {
-    padding: 20px;
-    background-color: #ccd2e5;
+    padding: 10px 12px;
+    background-color: #dde2ef;
     border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
 }
 
-    .upload-show-UI .upload-show-info .download-icon-box {
-        height: 32px;
-        width: 32px;
-        line-height: 32px;
-        border-radius: 50%;
-        background-color: #ffffff;
-        -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
-        box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
-        color: #2c2c2c;
-        text-align: center;
-        font-size: 16px;
-        margin-left: 10px;
-        text-decoration: underline;
-    }
+.upload-show-UI .upload-show-info .download-icon-box {
+    height: 32px;
+    width: 32px;
+    line-height: 32px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    -webkit-box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
+    box-shadow: 2px 4px 14px 0px rgb(0 0 0 / 15%);
+    color: #2c2c2c;
+    text-align: center;
+    font-size: 16px;
+    margin-left: 20px;
+    text-decoration: underline;
+}
 
-    .upload-show-UI .upload-show-info .upload-file-name {
-        font-size: 14px;
-        text-decoration: underline;
-    }
+.upload-show-UI .upload-show-info .upload-file-name {
+    font-size: 14px;
+    color: #071659;
+    text-decoration: underline;
+}
 
-.file-icon-box {
-    margin-right: 5px;
+.upload-show-UI .upload-show-info .file-icon-box {
+    margin-right: 10px;
     margin-top: 3px;
     font-size: 24px;
     color: #7682a4;
 }
 
+.chat-upload-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #e1e5f7;
+}
+.chat-upload-progress .chat-upload-progress-bar {
+    height: 4px;
+    background-color: #c91657;
+    border-radius: 10px;
+}
+
+
+
+
 
 
 @media (min-width: 1700px) and (max-width: 1920px) {
-
 }
 @media (min-width: 1500px) and (max-width: 1700px) {
 
