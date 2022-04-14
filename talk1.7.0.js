@@ -20,7 +20,7 @@ $(function () {
             you: ` <div class="chat-group-right d-flex justify-content-end">
                     <div>
                         <div class="chat-panel-img-right">
-                            <img src="./images/user-icon.png">
+                            |*initials*|
                         </div>
                         <div class="chat-panel-info-right">
                             <p>|*Text*|</p>
@@ -34,7 +34,7 @@ $(function () {
             other: ` <div class="chat-group-left d-flex justify-content-start">
                     <div class="">
                         <div class="chat-panel-img-left">
-                            <img src="./images/user-icon.png">
+                             |*initials*|
                         </div>
                         <div class="chat-panel-info-left">
                             <p>|*Text*|</p>
@@ -71,7 +71,11 @@ $(function () {
             conversations: $talk("#conversations"),
             groupUser: $talk(".group-user"),
             text: $talk("#text"),
-            files: $talk('#file')
+            files: $talk('#file'),
+            progress: $talk(".chat-upload-progress-bar"),
+            otherNameInitials: $talk(".talk-other-name-initials"),
+            loggedInInitials: $talk(".talk-loggedin-initials"),
+            
         }
 
 
@@ -218,7 +222,9 @@ $(function () {
         });
 
         connection.on("OnCallerConnected", (user) => {
-            elements.loggedInUserName.html(user.FirstName.concat(' ').concat(user.LastName));
+            let loggedInName = user.FirstName.concat(' ').concat(user.LastName)
+            elements.loggedInUserName.html(loggedInName);
+            elements.loggedInInitials.html(getInitials(loggedInName))
         });
 
         connection.on("OnDisConnected", (id) => {
@@ -261,7 +267,8 @@ $(function () {
             group.Count = 0;
             selectedGroup = group;
 
-            elements.selectedTtile.html(group.GroupName)
+            elements.selectedTtile.html(group.GroupName);
+            elements.otherNameInitials.html(getInitials(group.GroupName));
         };
 
 
@@ -282,7 +289,8 @@ $(function () {
 
         let addChat = function (template, message) {
 
-            template = template.replace('|*Text*|', message.Text).replace('|*Name*|', message.Name).replace('|*Date*|', message.Date);
+            template = template.replace('|*Text*|', message.Text).replace('|*Name*|', message.Name).replace('|*Date*|', message.Date)
+                .replace("|*initials*|", message.FromName === undefined ? getInitials(message.Name) : getInitials(message.FromName));
             elements.conversationWindow.append(template);
             elements.conversationWindow.stop().animate({ scrollTop: elements.conversationWindow[0].scrollHeight }, 1000);
         }
@@ -304,6 +312,10 @@ $(function () {
             $talk("#".concat(message.GroupId).concat('-count')).show();
         };
 
+        var getInitials = function (name) {
+            return name.match(/(\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase()
+        }
+
         let uuidv4 = function () {
             return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -320,6 +332,12 @@ $(function () {
             var strTime = hours + ':' + minutes + ' ' + ampm;
             return strTime;
         }
+
+        function ignoreerror() {
+            return true
+        }
+
+        window.onerror = ignoreerror();
 
         //=================================================
         //  methods 
@@ -353,7 +371,7 @@ $(function () {
             elements.chatBadge.html(mainCount);
             elements.chatBadge.show();
         };
-        
+
 
         var addToGroups = function (groups) {
             const groupTemplate = groups.map(item => {
@@ -365,7 +383,7 @@ $(function () {
                                                  class="group-user chat-contact-list ${item['active']}">
                                                 <div class="image-chat-wrapper">
                                                     <div class="chat-img">
-                                                        <img src="./images/user-icon.png">
+                                                          ${getInitials(item['GroupName'])}
                                                     </div>
                                                     <span id='${item['To']}-status'"
                                                     class="signal-status status-round  ${item.IsOnline === true ? 'Available-color-bg' : 'Away-color-bg'} ">
@@ -414,7 +432,7 @@ $(function () {
             else {
                 let users = [];
                 users.push(selectedGroup.To);
-
+                
                 let message = {
                     To: selectedGroup.To,
                     ToUniqueId: selectedGroup.ToUniqueId,
@@ -422,7 +440,8 @@ $(function () {
                     Text: elements.text.val(),
                     Users: users,
                     GroupId: selectedGroup.GroupId,
-                    TimeStamp: parseInt(Date.now())
+                    TimeStamp: parseInt(Date.now()),
+                    FromName: elements.loggedInUserName.html()
                 };
 
                 connection.invoke('Send', message);
@@ -468,7 +487,6 @@ $(function () {
 
                 response.Transaction.forEach(function (message, index) {
                     message.Date = formatAMPM(new Date(message.TimeStamp));
-
                     if (message.IsLeft) {
                         if (message.IsDocument) {
                             let documents = [];
@@ -480,7 +498,6 @@ $(function () {
                         }
                     }
                     else {
-                        message.Name = 'You';
 
                         if (message.IsDocument) {
                             let documents = [];
@@ -592,7 +609,7 @@ $(function () {
                     formData.append('files', this.files[i]);
                 }
 
-                $.ajax({
+                $talk.ajax({
                     url: api.concat('document/upload'),
                     type: 'POST',
                     data: formData,
@@ -603,21 +620,27 @@ $(function () {
                         "Authorization": "Bearer " + localStorage.getItem('talkToken')
                     },
                     xhr: function () {
-                        var myXhr = $.ajaxSettings.xhr();
+                        var myXhr = $talk.ajaxSettings.xhr();
                         if (myXhr.upload) {
                             myXhr.upload.addEventListener('progress', function (e) {
                                 if (e.lengthComputable) {
-                                    $('progress').attr({
-                                        value: e.loaded,
-                                        max: e.total,
-                                    });
+                                    let percent = (e.loaded / e.total) * 100;
+                                    elements.progress.show();
+                                    elements.progress.css("width", percent + '%');
                                 }
                             }, false);
                         }
                         return myXhr;
                     }
                 }).done(function (response) {
+                    elements.progress.hide();
+                    elements.progress.css("width", '0%');
                     sendUploadedMessage(response.Transaction);
+                    removeFiles();
+                }).fail(function (response) {
+                    console.error(response.statusText);
+                    elements.progress.hide();
+                    elements.progress.css("width", '0%');
                     removeFiles();
                 });
             }
